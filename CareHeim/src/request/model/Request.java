@@ -1,11 +1,11 @@
-package data;
+package request.model;
 
-public class RequestMessage {
+public class Request {
 	private int device;
 	private int requestType;
 	private Object body;
 	
-	public RequestMessage(int device, int requestType, Object body) {
+	public Request(int device, int requestType, Object body) {
 		this.device = device;
 		this.requestType = requestType;
 		this.body = body;

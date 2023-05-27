@@ -1,8 +1,8 @@
-package controller.img;
+package image;
 
 import java.util.ArrayList;
 
-import data.*;
+import model.*;
 
 public class Segmentation {
 	public static ClotheSegResult[] clothe(Image img) {	

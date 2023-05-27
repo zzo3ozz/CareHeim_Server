@@ -1,6 +1,6 @@
-package controller.img;
+package image;
 
-import data.Image;
+import model.Image;
 
 public class PreProcessing {
 	public static Image removeBackgroud(Image img, double[] coordinate) {

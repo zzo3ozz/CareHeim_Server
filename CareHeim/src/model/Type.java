@@ -1,4 +1,4 @@
-package data;
+package model;
 
 public enum Type {
 	SHORTSLEEVETOP("반팔 상의"), LONGSLEEVETOP("긴팔 상의"), SHORTSLEEVEOUTWEAR("반팔 자켓"), LONGLSEEVEOUTWEAR("긴팔 자켓"),

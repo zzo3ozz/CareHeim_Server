@@ -1,7 +1,5 @@
 package thread;
 
-import data.*;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -11,6 +9,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
+import model.*;
 
 public class Service implements Runnable {
 	private Socket client_socket;
@@ -49,10 +49,4 @@ public class Service implements Runnable {
 			}
 		}
 	}
-	
-	
-	
-	
-	
-	
 }

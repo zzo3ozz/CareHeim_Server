@@ -1,4 +1,4 @@
-package data;
+package model;
 
 public class ClotheSegResult {
 	private int type;

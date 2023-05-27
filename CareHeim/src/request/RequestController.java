@@ -1,32 +1,34 @@
-package controller.message;
+package request;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import data.Clothe;
-import data.ClotheSegResult;
-import data.Image;
-import data.RequestMessage;
+import request.model.Request;
 import controller.img.*;
+import model.Clothe;
+import model.ClotheSegResult;
+import model.Image;
 
-public class Request {
+public class RequestController {
 	public static final int RASPBERRY = 0;
+	public static final int MOBILE = 1;
+	
 	public static final int RS_INFO_ENROLL = 0;
 	public static final int RS_SAVE = 1;
 	public static final int RS_INFO_CARE = 2;
 	public static final int RS_CLOSE = 4;
 	
-	public static final int MOBILE = 1;
 	public static final int MB_INFO_LATEST = 0;
 	public static final int MB_INFO = 1;
 	public static final int MB_SAVE = 2;
 	public static final int MB_CLOSE = 3;
 	
 	public static JSONParser parser = new JSONParser();
+	public static RequestProvider requestProvider = new RequestProvider();
 	
 	public Object executeRequest(String message) {
-		RequestMessage rq = parsing(message);
+		Request rq = parsing(message);
 		
 		if(rq != null) {
 			if(rq.getDevice() == RASPBERRY) { // 라즈베리 파이
@@ -43,7 +45,7 @@ public class Request {
 		return null;
 	}
 	
-	public RequestMessage parsing(String message) {
+	public Request parsing(String message) {
 		// JSON 파싱
         try {
 			JSONObject object = (JSONObject) parser.parse(message);
@@ -52,7 +54,7 @@ public class Request {
 			int requestType = (int) object.get("requestType");
 			JSONObject body = (JSONObject) object.get("body");
 			
-			return new RequestMessage(deviceType, requestType, body);
+			return new Request(deviceType, requestType, body);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			System.out.print("파싱 실패");
@@ -60,12 +62,12 @@ public class Request {
 		}
 	}
 		
-	public void requestFromRaspberry(int rt, JSONObject body) {
-		if(rt == RS_INFO_ENROLL) { // 의류 특징 추출, 정보 반환 요청 - 의류 등록 시
+	public void requestFromRaspberry(int requestType, JSONObject body) {
+		if(requestType == RS_INFO_ENROLL) { // 의류 특징 추출, 정보 반환 요청 - 의류 등록 시
 			Image img = null; //이미지 파일을 불러옴
 			
-			ClotheSegResult[] segs = controller.img.Segmentation.clothe(img); //의류 세그먼트
-			Clothe[] clothes = controller.img.Feature.extractFeature(segs, img);
+			ClotheSegResult[] segs = image.Segmentation.clothe(img); //의류 세그먼트
+			Clothe[] clothes = image.Feature.extractFeature(segs, img);
 			
 			// clothes 정보 json으로 생성 후 라즈베리파이로 전송
 			
@@ -73,9 +75,9 @@ public class Request {
 			
 			// *요청 수신, 데이터 파싱
 			
-			boolean insertDB = true; // *요청에서 파싱한 정보. DB에 저장할 건지?
+			boolean inserequestTypeDB = true; // *요청에서 파싱한 정보. DB에 저장할 건지?
 			
-			if(insertDB) {
+			if(inserequestTypeDB) {
 				// 데이터 파싱
 				boolean isChanged = true;  // 변경된 내용이 있는지?
 				
@@ -89,11 +91,11 @@ public class Request {
 				// 해당 프로세스 종료, TCP 연결해제
 			}
 			
-		} else if(rt == RS_INFO_CARE) { // 의류 특징 추출, 정보 반환 요청 - 세탁 정보 안내 시
+		} else if(requestType == RS_INFO_CARE) { // 의류 특징 추출, 정보 반환 요청 - 세탁 정보 안내 시
 			Image img = null; //이미지 파일을 불러옴
 			
-			ClotheSegResult[] segs = controller.img.Segmentation.clothe(img); //의류 세그먼트
-			Clothe[] clothes = controller.img.Feature.extractFeature(segs, img);
+			ClotheSegResult[] segs = image.Segmentation.clothe(img); //의류 세그먼트
+			Clothe[] clothes = image.Feature.extractFeature(segs, img);
 			
 			// DB 서브루틴 호출
 			// DB에서 동일한 의류 검색, careInfo 및 canDetectStain 결과 가져옴
@@ -101,7 +103,7 @@ public class Request {
 			
 			// clothes 정보 json으로 생성 후 라즈베리파이로 전송
 			// 전송 성공 여부 확인 후 TCP연결 해제
-		} else if (rt == RS_SAVE) { // DB 저장 요청
+		} else if (requestType == RS_SAVE) { // DB 저장 요청
 			
 		} else {
 			// 잘못된 정보 전송됨 : 오류처리

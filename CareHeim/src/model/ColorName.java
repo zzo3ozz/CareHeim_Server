@@ -1,4 +1,4 @@
-package data;
+package model;
 
 public class ColorName {
 	public static String getName(double H, double S, double V) {

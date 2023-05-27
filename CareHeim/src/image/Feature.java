@@ -1,8 +1,8 @@
-package controller.img;
+package image;
 
 import java.util.ArrayList;
 
-import data.*;
+import model.*;
 
 public class Feature {
 	public static Clothe[] extractFeature(ClotheSegResult[] segs, Image img) {
