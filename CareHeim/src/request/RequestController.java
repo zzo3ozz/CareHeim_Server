@@ -1,13 +1,15 @@
 package request;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import clothe.model.Clothe;
 import request.model.Request;
 import controller.img.*;
-import model.Clothe;
 import model.ClotheSegResult;
+import model.Content;
 import model.Image;
 
 public class RequestController {
@@ -25,14 +27,13 @@ public class RequestController {
 	public static final int MB_CLOSE = 3;
 	
 	public static JSONParser parser = new JSONParser();
-	public static RequestProvider requestProvider = new RequestProvider();
 	
-	public Object executeRequest(String message) {
+	public Object executeRequest(Content info, String message) {
 		Request rq = parsing(message);
 		
 		if(rq != null) {
 			if(rq.getDevice() == RASPBERRY) { // 라즈베리 파이
-				requestFromRaspberry(rq.getRequestType(), (JSONObject) rq.getBody());
+				requestFromRaspberry(info, rq.getRequestType(), (JSONObject) rq.getBody());
 			} else if(rq.getDevice() == MOBILE){ // 안드로이드
 				requestFromMobile(rq.getRequestType(), (JSONObject) rq.getBody());
 			} else {
@@ -61,52 +62,50 @@ public class RequestController {
 			return null;
 		}
 	}
+	
+	// void가 아닌 상태 반환할 것 ex) Exception 등
+	public void requestFromRaspberry(Content existingInfo, int requestType, JSONObject body) {
+		if(requestType == RS_CLOSE) {
+			return ;// 통신 종료 >> 에러 처리로 구현
+		} else if (requestType > RS_CLOSE || requestType < RS_INFO_ENROLL) {
+			return ; // 에러 처리 - 잘못된 request
+		}
 		
-	public void requestFromRaspberry(int requestType, JSONObject body) {
-		if(requestType == RS_INFO_ENROLL) { // 의류 특징 추출, 정보 반환 요청 - 의류 등록 시
-			Image img = null; //이미지 파일을 불러옴
-			
-			ClotheSegResult[] segs = image.Segmentation.clothe(img); //의류 세그먼트
-			Clothe[] clothes = image.Feature.extractFeature(segs, img);
-			
-			// clothes 정보 json으로 생성 후 라즈베리파이로 전송
-			
-			// 응답 대기
-			
-			// *요청 수신, 데이터 파싱
-			
-			boolean inserequestTypeDB = true; // *요청에서 파싱한 정보. DB에 저장할 건지?
-			
-			if(inserequestTypeDB) {
-				// 데이터 파싱
-				boolean isChanged = true;  // 변경된 내용이 있는지?
-				
-				if(isChanged) {
-					// 변경된 내용 반영하여 DB등록
-					// DB 서브루틴 호출
-					// 서브루틴 종료, 결과 반환
-					// 저장 성공 여부 Raspberry로 전송, 전송 성공 여부 확인 후 TCP연결 해제
-				}
-			} else {
-				// 해당 프로세스 종료, TCP 연결해제
-			}
-			
-		} else if(requestType == RS_INFO_CARE) { // 의류 특징 추출, 정보 반환 요청 - 세탁 정보 안내 시
-			Image img = null; //이미지 파일을 불러옴
-			
-			ClotheSegResult[] segs = image.Segmentation.clothe(img); //의류 세그먼트
-			Clothe[] clothes = image.Feature.extractFeature(segs, img);
-			
-			// DB 서브루틴 호출
-			// DB에서 동일한 의류 검색, careInfo 및 canDetectStain 결과 가져옴
-			// true인 경우 오염탐지 실행, 결과 저장
-			
-			// clothes 정보 json으로 생성 후 라즈베리파이로 전송
-			// 전송 성공 여부 확인 후 TCP연결 해제
-		} else if (requestType == RS_SAVE) { // DB 저장 요청
-			
+		String user = (String) body.get("user");
+		
+		if(existingInfo.getUser() == null) {
+			existingInfo.setUser(user);
 		} else {
-			// 잘못된 정보 전송됨 : 오류처리
+			if(!existingInfo.getUser().equals(user)) {
+				// 에러 처리 - user 정보가 일치하지 않음
+			}
+		}
+		
+		if(requestType == RS_INFO_ENROLL) { // 의류 특징 추출, 정보 반환 요청 - 의류 등록 시	
+			String img = (String) body.get("img");
+			
+			Clothe[] clothes = RequestProvider.clotheInfo(img);
+			
+			existingInfo.setUser(user);
+			existingInfo.setClothes(clothes);
+			
+			return ; // request 처리 성공
+		} else if(requestType == RS_INFO_CARE) { // 의류 특징 추출, 정보 반환 요청 - 세탁 정보 안내 시
+			String img = (String) body.get("img");
+			
+			Clothe[] clothes = RequestProvider.careInfo(img);
+			
+			return ; // request 처리 성공 
+		} else if (requestType == RS_SAVE) { // DB 저장 요청
+			JSONArray array = (JSONArray) body.get("extraFeatures");
+			String[] extraFeatures = (String[]) array.toArray(); // **오류가 안나는지 확인 안해봄
+			
+			Clothe clothe = existingInfo.getClothes()[0];
+			clothe.addFeatures(extraFeatures);
+			
+			return ; // DB 저장 요청
+		} else {
+			// 오류 처리 : 현재 3번 비워져 있음
 		}
 	}
 	

@@ -3,14 +3,21 @@ package request;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
-
-
-import model.Clothe;
+import clothe.model.Clothe;
 
 public class RequestProvider {
 	
+	public static Clothe[] clotheInfo(String img) {
+		Clothe[] clothes = null;
+		
+		
+		
+		
+		
+		return clothes;
+	}
 	
-	public Clothe[] clotheInfo(String img) {
+	public static Clothe[] careInfo(String img) {
 		Clothe[] clothes = null;
 		
 		
