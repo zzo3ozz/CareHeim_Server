@@ -8,7 +8,7 @@ import java.util.Base64;
 
 public class testOpenCV {
     public static void main(String[] args) throws Exception {
-    	System.loadLibrary("opencv_java470");
+    	System.loadLibrary("config/opencv_java470");
     	
     	String filePath = "img_test/t20.png";
     	File file = new File(filePath);
@@ -29,7 +29,7 @@ public class testOpenCV {
          // MatOfByte 객체를 Mat 객체로 변환
         Mat matImage = Imgcodecs.imdecode(matOfByte, Imgcodecs.IMREAD_COLOR);
 
-         // Mat 객체의 이미지를 화면에 표시
+        // Mat 객체의 이미지를 저장
         Imgcodecs.imwrite("decoded_image.jpg", matImage);
         System.out.print("success");
     }

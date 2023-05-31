@@ -50,7 +50,7 @@ public class imageProvider {
 			ArrayList list = new ArrayList<MatOfPoint>();
 			list.add(polygon);
 			
-			Imgproc.fillPoly(mask, list, Scalar.all(255)); // 해당 코드 이상한 듯?
+			Imgproc.fillPoly(mask, list, Scalar.all(255));
 			
 			Mat result = new Mat();
 			Core.bitwise_and(img, img, result, mask);
