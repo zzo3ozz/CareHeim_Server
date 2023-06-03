@@ -3,6 +3,7 @@ package thread;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.EOFException;
 import java.net.Socket;
 
 import org.json.simple.JSONObject;
@@ -21,6 +22,7 @@ public class Service implements Runnable {
 	
 	public Service(Socket socket) {
 		client_socket = socket; // 클라이언트 소켓과 동일
+		System.out.println(socket + "is connected running at thread : " + this);
 		try {
 			this.in = new DataInputStream(client_socket.getInputStream());
 			this.out = new DataOutputStream(client_socket.getOutputStream());
@@ -35,20 +37,19 @@ public class Service implements Runnable {
 			try {
 				String message = in.readUTF();					
 				System.out.println(message);	
+			} catch (EOFException e) {
+				System.out.println("연결 종료");
+				break;
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				System.out.println("비정상 종료");
+				e.printStackTrace();
 				break;
 			}
 		
-			if(client_socket.isClosed()) {
-				break;
-			} else {
-				Thread.yield();
-			}
+			
 		}
 		
-		System.out.println("스레드 종료");
+		System.out.println(this + " 스레드 종료");
 	}
 }
 
