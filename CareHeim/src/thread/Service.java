@@ -34,7 +34,7 @@ public class Service implements Runnable {
 		while(true) {
 			try {
 				String message = in.readUTF();					
-				System.out.println(message));	
+				System.out.println(message);	
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
