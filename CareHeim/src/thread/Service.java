@@ -37,7 +37,7 @@ public class Service implements Runnable {
 				System.out.println(message);	
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.out.println("비정상 종료");
 			}
 		
 			if(client_socket.isClosed()) {
@@ -50,3 +50,4 @@ public class Service implements Runnable {
 		System.out.println("스레드 종료");
 	}
 }
+
