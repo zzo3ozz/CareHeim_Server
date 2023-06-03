@@ -38,6 +38,7 @@ public class Service implements Runnable {
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				System.out.println("비정상 종료");
+				break;
 			}
 		
 			if(client_socket.isClosed()) {
