@@ -32,21 +32,21 @@ public class Service implements Runnable {
 	
 	public void run() {
 		while(true) {
-			if(in != null) {
-				try {
-					String message = in.readUTF();					
-					
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+			try {
+				String message = in.readUTF();					
+				System.out.println(message));	
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+			if(client_socket.isClosed()) {
+				break;
 			} else {
-				if(client_socket.isClosed()) {
-					break;
-				} else {
-					Thread.yield();
-				}
+				Thread.yield();
 			}
 		}
+		
+		System.out.println("스레드 종료");
 	}
 }

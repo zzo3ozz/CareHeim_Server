@@ -1,4 +1,4 @@
-package model;
+package request.model;
 
 import clothe.model.Clothe;
 

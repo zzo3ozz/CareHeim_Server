@@ -47,9 +47,9 @@ public class Main {
 					try {
 						threads.submit(connect); // 작업을 스레드풀에 제출하고 곧바로 return함.
 					} catch (NullPointerException e) {
-						System.out.print("통신이 비정상적으로 종료되었습니다.");
+						System.out.println("통신이 비정상적으로 종료되었습니다.");
 					} catch (RejectedExecutionException e) {
-						System.out.print("스케줄 큐에 등록이 거부되었습니다.");
+						System.out.println("스케줄 큐에 등록이 거부되었습니다.");
 					}
 				} else {
 					System.out.println("포트가 열리지 않았습니다.");
