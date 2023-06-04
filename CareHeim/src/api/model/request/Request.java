@@ -1,4 +1,4 @@
-package request.model;
+package api.model.request;
 
 public class Request {
 	private int device;

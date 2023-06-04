@@ -44,6 +44,8 @@ public class Service implements Runnable {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				break;
+			} catch (Exception e) {
+				System.out.println("비정상 종료");
 			}
 		
 			
