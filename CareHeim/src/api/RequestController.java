@@ -46,7 +46,7 @@ public class RequestController {
 	
 	
 	
-	// void가 아닌 상태 반환할 것 ex) Exception 등
+	// void가 아닌 상태 반환할 것 ex) Exception 등으로 처리
 	public void requestFromRaspberry(ResponseBody responseBody, int requestType, JSONObject body) {
 		if(requestType == RP_CLOSE) {
 			return ;// 통신 종료
@@ -64,12 +64,15 @@ public class RequestController {
 			}
 		}
 		
+		
 		if(requestType == RP_CLOTHE_INFO) { // 의류 특징 추출, 정보 반환 요청 - 의류 등록 시	
-			ExtractFeatures extractFeatures = (ExtractFeatures) content;
-			(ClotheInfoArray) responseBody.setClothes(R))
+			ExtractFeatures extractFeatures = (ExtractFeatures) RequestProvider.parsingRPBody(requestType, body);
+			ClotheInfoArray[] clothes = RequestProvider.clotheInfo(extractFeatures.getImg());
+			
 			return ; // request 처리 성공
 		} else if(requestType == RP_CARE_INFO) { // 의류 특징 추출, 정보 반환 요청 - 세탁 정보 안내 시
-			
+			ExtractFeatures extractFeatures = (ExtractFeatures) RequestProvider.parsingRPBody(requestType, body);
+			CareInfoArray[] clothes = RequestProvider.careInfo(extractFeatures.getImg());
 			
 			return ; // request 처리 성공 
 		} else if (requestType == RP_SAVE) { // DB 저장 요청

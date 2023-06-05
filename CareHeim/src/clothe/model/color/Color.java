@@ -1,4 +1,4 @@
-package clothe.model;
+package clothe.model.color;
 
 public class Color {
 	private double H;
@@ -19,8 +19,20 @@ public class Color {
 		this.V = V;
 	}
 	
+	public Color(double H, double S, double V, double pixelFraction, String name) {
+		this.H = H;
+		this.S = S;
+		this.V = V;
+		this.pixelFraction = pixelFraction;
+		this.name = name;
+	}
+	
 	public double[] RGBtoHSV(int R, int G, int B) {
 		double[] HSV = new double[3];
+		
+		HSV[0] = 0;
+		HSV[1] = 0;
+		HSV[2] = 0;
 		
 		return HSV;
 	}
@@ -39,9 +51,19 @@ public class Color {
 		this.pixelFraction = pixelFraction;
 	}
 	
-	public double[] getHSV() {
-		double[] HSV = {this.H, this.S, this.V};
-		
-		return HSV;
+	public double getH() {
+		return this.H;
+	}
+	
+	public double getS() {
+		return this.S;
+	}
+	
+	public double getV() {
+		return this.V;
+	}
+	
+	public double getPixelFraction() {
+		return this.pixelFraction;
 	}
 }

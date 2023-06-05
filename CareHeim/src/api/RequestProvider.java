@@ -1,11 +1,16 @@
 package api;
 
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import api.model.request.*;
+import api.model.response.*;
 import clothe.model.Clothe;
+import image.ImageController;
 
 public class RequestProvider {
 	public static final int RASPBERRY = 0;
@@ -50,7 +55,15 @@ public class RequestProvider {
 		if(requestType == RP_CLOTHE_INFO || requestType == RP_CARE_INFO) {
 			String user = (String) body.get("user");
 			String img_string = (String) body.get("img");
-			byte[] img = img_string.getBytes(); // utf-8 설정하지 않아도 괜찮은지?
+			byte[] img;
+			
+			try {
+				img = img_string.getBytes("UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				img = img_string.getBytes();
+			}
+			
 			parsed = new ExtractFeatures(user, img);
 		} else if(requestType == RP_SAVE) {
 			String user = (String) body.get("user");
@@ -61,8 +74,10 @@ public class RequestProvider {
 		return parsed;
 	}
 		
-	public static Clothe[] clotheInfo(byte[] img) {
-		Clothe[] clothes = null;
+	public static ClotheInfoArray[] clotheInfo(byte[] img) {
+		ArrayList<byte[]> clothe_imgs = ImageController.getClotheSegmentation(img);
+		
+		ClotheInfoArray[] clothes = null;
 		
 		
 		
@@ -71,8 +86,8 @@ public class RequestProvider {
 		return clothes;
 	}
 	
-	public static Clothe[] careInfo(Clothe[] clothes) {
-		
+	public static CareInfoArray[] careInfo(byte[] img) {
+		Clothe[] clothes = null;
 		
 		return clothes;
 	}

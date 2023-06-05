@@ -16,35 +16,13 @@ import model.Image;
 
 
 public class Clothe {
-	private int id;
 	private int type;
 	private int ptn;
-	
 	private String[] colors;
-	private ArrayList<String> features;
-	
-	private boolean canDetectStain;
-	private boolean hasStain;
-	
-	private String[] careInfos;
-	
+
 	public Clothe(int type, int ptn, String[] colors) {
 		this.type = type;
 		this.ptn = ptn;
 		this.colors = colors.clone();
-	}
-	
-	public void setFeatures(String[] features) {
-		this.features = new ArrayList<String>(Arrays.asList(features));
-	}
-	
-	public void addFeatures(String[] features) {
-		for(String feature : features) {
-			this.features.add(feature);
-		}
-	}
-	
-	public ArrayList<String> getFeatures() {
-		return this.features;
 	}
 }

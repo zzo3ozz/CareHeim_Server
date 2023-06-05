@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.EOFException;
 import java.net.Socket;
+import java.net.SocketException;
 
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
@@ -36,16 +37,21 @@ public class Service implements Runnable {
 		while(true) {
 			try {
 				String message = in.readUTF();					
-				System.out.println(message);	
+				System.out.println(message);
+				
+				String outputMessage = "Test message from Server";
+				out.writeUTF(outputMessage);
+				System.out.println("outputMessage is sended.");
+			} catch (SocketException e) {
+				System.out.println("Connection 분실");
+				break;
 			} catch (EOFException e) {
 				System.out.println("연결 종료");
 				break;
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.out.print("입출력 오류");
 				break;
-			} catch (Exception e) {
-				System.out.println("비정상 종료");
 			}
 		
 			
