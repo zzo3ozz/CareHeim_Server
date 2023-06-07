@@ -10,8 +10,7 @@ import org.opencv.core.CvType;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
-import clothe.cloudvision.DetectColors;
-import clothe.model.Clothe;
+import clothe.model.SegmentResult;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,7 +25,7 @@ public class ImageProvider {
 		
 		return mat_img;
 	}
-	
+
 	public static byte[] matToByte(Mat mat) {
 		MatOfByte matOfByte = new MatOfByte();
         
@@ -38,20 +37,21 @@ public class ImageProvider {
         return img;
 	}
 	
-	public static ArrayList<byte[]> segmentClothe(byte[] img) {
+	public static ArrayList<SegmentResult> segmentClothe(byte[] img) {
 		Mat mat_img = byteToMat(img);
 		
-		// python segment 결과 파싱 
+		// python segment 결과 --> http request
 		
-		ArrayList clothePolygons = new ArrayList<Point[]>();
+		ArrayList<Point[]> clothePolygons = new ArrayList<Point[]>();
+		ArrayList<Integer> clotheType = new ArrayList<Integer>();
 		
 		int cnt = clothePolygons.size();
-		ArrayList clothes = new ArrayList<byte[]>();
+		ArrayList clothes = new ArrayList<SegmentResult>();
 		
 		
 		for(int i = 0; i < cnt; i++) {
 			Mat mask = new Mat(mat_img.size(), CvType.CV_8UC1, Scalar.all(0));
-			Point[] points = (Point[]) clothePolygons.get(i);
+			Point[] points = clothePolygons.get(i);
 			
 			MatOfPoint polygon = new MatOfPoint();
 			polygon.fromArray(points);
@@ -64,7 +64,8 @@ public class ImageProvider {
 			Mat result = new Mat();
 			Core.bitwise_and(mat_img, mat_img, result, mask);
 			
-			clothes.add(matToByte(result));
+			SegmentResult clothe = new SegmentResult(clotheType.get(i), matToByte(result));
+			clothes.add(clothe);
 		}
 
 		return clothes;

@@ -1,14 +1,13 @@
 package image;
 
-
 import java.util.ArrayList;
 
-import clothe.model.Clothe;
+import clothe.model.SegmentResult;
 
 public class ImageController {
-	public static ArrayList<byte[]> getClotheSegmentation(byte[] img) {
+	public static ArrayList<SegmentResult> getClotheSegmentation(byte[] img) {
 		
-		ArrayList<byte[]> clothes = ImageProvider.segmentClothe(img);
+		ArrayList<SegmentResult> clothes = ImageProvider.segmentClothe(img);
 		
 		return clothes;
 	}

@@ -12,8 +12,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import model.*;
-
 public class Service implements Runnable {
 	private Socket client_socket;
 	private DataInputStream in;
@@ -34,6 +32,9 @@ public class Service implements Runnable {
 	}
 	
 	public void run() {
+		Object requestedBody;
+		Object reponseBody;
+		
 		while(true) {
 			try {
 				String message = in.readUTF();					
