@@ -1,39 +1,47 @@
 package clothe;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Optional;
 
-import clothe.model.*;
-import clothe.model.color.*;
+import org.json.simple.JSONObject;
 
-public class ClotheProvider {
+import AI.HttpRequestProvider;
+
+public class ClotheProvider {	
 	public static int getPattern(byte[] img) {
+		JSONObject object = HttpRequestProvider.requestPOST("pattern", img);
 		
-		// python 패턴 추출 모델 파싱 --> httpRequest
+		int ptn = -1;
 		
-		int ptn = 0; // 민무늬 : 0
-		
+		if(object != null) {
+			ptn= Long.valueOf(Optional.ofNullable((Long) object.get("pattern")).orElse(0L)).intValue(); 
+		}
+				
 		return ptn;
 	}
 	
 	public static Boolean canDetectStain(int ptn) {
-		if(ptn == 1)// 얼룩 탐지가 가능한 패턴
-			return true;
-		else 
+		if(ptn == 0 || ptn == 4 || ptn == 5 || ptn == 8 || ptn == 10)// 얼룩 탐지가 가능한 패턴
 			return false;
+		else 
+			return true;
 	}
 	
 	public static Boolean getStain(byte[] img) {
+		JSONObject object = HttpRequestProvider.requestPOST("stain", img);
+		
 		boolean hasStain = false;
 		
-		// python 패턴 추출 모델 파싱 --> httpRequest
+		if(object != null) {
+			hasStain= (boolean) object.get("hasStain"); 
+		}
 		
 		return hasStain;
 	}
 	
-	public static boolean isSame(byte[] img1, byte[] img2) {
-		boolean isSame = true;
-		// openCV를 통해 같은 사진인지 비교 
-		return isSame;
-	}
+//	public static boolean isSame(byte[] img1, byte[] img2) {
+//		boolean isSame = true;
+//		// openCV를 통해 같은 사진인지 비교 
+//		return isSame;
+//	}
 }

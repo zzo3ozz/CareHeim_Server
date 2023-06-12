@@ -26,9 +26,11 @@ public class RequestController {
 			} else if(request.getDevice() == Request.MOBILE){ // 안드로이드
 				requestFromMobile(response, request.getRequestType(), request.getUser(), (JSONObject) request.getBody());
 			} else {
+				System.out.print("parsing error");
 				// 파싱 에러, 각 사이드로 정보 재요청 **동일
 			}
 		} else {
+			System.out.println("parsing fail");
 			// 파싱 실패, 각 사이드로 정보 재요청 **동일
 		}
 	}
@@ -36,20 +38,25 @@ public class RequestController {
 	
 	// void가 아닌 상태 반환할 것 ex) Exception 등으로 처리
 	public void requestFromRaspberry(Response response, int requestType, String user, JSONObject body) throws IOException {
+		System.out.println("requestFromRaspberry");
 		if(requestType == Request.RP_CLOSE) {
+			System.out.println("request close");
 			return ;// 통신 종료
 		} else if (requestType > Request.RP_CLOSE || requestType < Request.RP_CLOTHE_INFO) {
+			System.out.println("wrong request");
 			return ; // 에러 처리 - 잘못된 request
 		}
 		
 		if(response != null && response.getUser() != null && !(response.getUser().equals(user))) {
 			// 에러 처리 - user 정보가 일치하지 않음
+			System.out.println("user id is not matched");
 		}
 		
 		RaspberryRequestBody raspberryRequestBody = RequestProvider.parsingRPBody(body);
 		
 		if(requestType == Request.RP_CLOTHE_INFO) { // 의류 특징 추출, 정보 반환 요청 - 의류 등록 시	
-			ClotheInfoRes[] clotheInfoReses = RequestProvider.getClotheInfos(user, raspberryRequestBody.getImg());
+			System.out.println("Request Clothe Info");
+			ClotheInfoRes[] clotheInfoReses = RequestProvider.getClotheInfos(user, raspberryRequestBody.getFilePath(), raspberryRequestBody.getImg());
 			
 			response.setReponsType(Response.RETURN_CLOTHE);
 			response.setUser(user);
@@ -57,7 +64,7 @@ public class RequestController {
 			
 			return ; // request 처리 성공
 		} else if(requestType == Request.RP_CARE_INFO) { // 의류 특징 추출, 정보 반환 요청 - 세탁 정보 안내 시
-			CareInfoRes[] careInfoReses = RequestProvider.getCareInfos(user, raspberryRequestBody.getImg());
+			CareInfoRes[] careInfoReses = RequestProvider.getCareInfos(user, raspberryRequestBody.getFilePath(), raspberryRequestBody.getImg());
 			
 			response.setReponsType(Response.RETURN_CLOTHE);
 			response.setUser(user);
@@ -102,7 +109,14 @@ public class RequestController {
 			
 			return;
 		} else if (requestType == Request.MB_INFO) { // 검색한 의류 정보 요청
-						// DB thread 호출. User의 Document에서 일치하는 특징의 의류 정보를 꺼내옴 
+			ClotheInfoResForMobile clotheInfoResForMobile
+				= RequestProvider.getSearchedClothe(user, mobileRequestBody.getFeaturedClothe());
+					
+			response.setReponsType(Response.RETURN_CLOTHE);
+			response.setUser(user);
+			response.setResponsBody(clotheInfoResForMobile);
+			
+			return;
 		} else if (requestType == Request.MB_SAVE){ // 케어라벨 정보 저장 요청
 			ClotheInfoResForMobile beforeResponse = (ClotheInfoResForMobile) response.getResponsBody(); 
 			
@@ -112,6 +126,7 @@ public class RequestController {
 			response.setReponsType(Response.RETURN_DB_STATE);
 			response.setUser(user);
 			response.setResponsBody(dbResultRes);
+			
 			return;
 		} else { // 잘못된 정보 전송됨 : 오류처리
 						

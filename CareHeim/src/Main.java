@@ -34,8 +34,6 @@ public class Main {
 			System.out.println("이미 사용 중인 포트입니다.");
 		}
 		
-		// DB 스레드 생성
-		
 		while(true) {
 			try {
 				if(mainSocket != null) {

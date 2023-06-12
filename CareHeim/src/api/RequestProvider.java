@@ -1,8 +1,11 @@
 package api;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Optional;
 
 import org.json.simple.JSONObject;
@@ -40,20 +43,28 @@ public class RequestProvider {
 	
 	public static RaspberryRequestBody parsingRPBody(JSONObject body) {
 		RaspberryRequestBody parsed = new RaspberryRequestBody();
-		
 		if(body != null) {
 			if(body.get("img") != null) {
 				String img_string = (String) body.get("img");
+				parsed.setFilePath(img_string);
 				
-				byte[] img;
+				String file_path = "C:/Users/hhzzo/conda/careheim/seg_result/" + img_string + ".png";
+				File file = new File(file_path);
+		    	
+		    	FileInputStream fis;
 				try {
-					img = img_string.getBytes("UTF-8");
-				} catch (UnsupportedEncodingException e) {
+					fis = new FileInputStream(file);
+					byte img[] = new byte[(int)file.length()];
+					fis.read(img);
+					parsed.setImg(img);
+					System.out.println("images set");
+				} catch (FileNotFoundException e) {
 					// TODO Auto-generated catch block
-					img = img_string.getBytes();
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				
-				parsed.setImg(img);
 			}
 			
 			if(body.get("extraFeatures") != null) {
@@ -64,28 +75,37 @@ public class RequestProvider {
 				parsed.setSavingIndex(Long.valueOf(Optional.ofNullable((Long) body.get("savingIndex")).orElse(0L)).intValue());
 			}
 		}
-
+		System.out.println("body parsing success");
+		
 		return parsed;
 	}
 		
 	public static MobileRequestBody parsingMBBody(JSONObject body) {
 		MobileRequestBody parsed = new MobileRequestBody();
 		
-		if(body != null) {
-			if(body.get("features") != null) {
-				parsed.setFeatures((String[]) body.get("Features"));
-			}
-			
+		if(body != null) {			
 			if(body.get("careInfos") != null) {
 				parsed.setCareInfos((String[]) body.get("careInfos"));
 			}
+			
+			if(body.get("clothe") != null) {
+				JSONObject clothe = (JSONObject) body.get("clothe");
+				FeaturedClothe featuredClothe = new FeaturedClothe();
+				
+				featuredClothe.setType(Long.valueOf(Optional.ofNullable((Long) body.get("type")).orElse(0L)).intValue());
+				featuredClothe.setPtn(Long.valueOf(Optional.ofNullable((Long) body.get("ptn")).orElse(0L)).intValue());
+				featuredClothe.setColors((String[]) body.get("colors"));
+				featuredClothe.setFeatures((String[]) body.get("features"));
+				parsed.setFeaturedClothe(null);
+			}
 		}
-		
+		System.out.println("body parsing success");
 		return parsed;
 	}
 
-	public static ClotheInfoRes[] getClotheInfos(String user, byte[] img) throws IOException {
-		ArrayList<SegmentResult> clothe_imgs = ImageController.getClotheSegmentation(img);
+	public static ClotheInfoRes[] getClotheInfos(String user, String filePath, byte[] img) throws IOException {
+		System.out.println("get Clothe Infos");
+		ArrayList<SegmentResult> clothe_imgs = ImageController.getClotheSegmentation(filePath, img);
 		
 		ClotheInfoRes[] clotheInfoReses = new ClotheInfoRes[clothe_imgs.size()];
 		
@@ -105,8 +125,8 @@ public class RequestProvider {
 		return clotheInfoReses;
 	}
 	
-	public static CareInfoRes[] getCareInfos(String user, byte[] img) throws IOException {
-		ArrayList<SegmentResult> clothe_imgs = ImageController.getClotheSegmentation(img);
+	public static CareInfoRes[] getCareInfos(String user, String filePath, byte[] img) throws IOException {
+		ArrayList<SegmentResult> clothe_imgs = ImageController.getClotheSegmentation(filePath, img);
 		
 		CareInfoRes[] careInfoReses = new CareInfoRes[clothe_imgs.size()];
 		
@@ -152,6 +172,21 @@ public class RequestProvider {
 			}
 		} else {
 			response = new ClotheInfoResForMobile(ClotheInfoResForMobile.UNSAVED, null);
+		}
+		
+		return response;
+	}
+	
+	public static ClotheInfoResForMobile getSearchedClothe(String user, FeaturedClothe clothe) {
+		ClotheDocument[] documents = ClotheDAO.selectClothe(user, clothe.getType(), clothe.getPtn(), clothe.getColors(), clothe.getFeatures());
+		ClotheInfoResForMobile response;
+		
+		if(documents.length >= 2) {
+			response = new ClotheInfoResForMobile(ClotheInfoResForMobile.SAVED, null);
+		} else if(documents.length < 1) {
+			response = new ClotheInfoResForMobile(ClotheInfoResForMobile.UNSAVED, null);
+		} else {
+			response = new ClotheInfoResForMobile(ClotheInfoResForMobile.SUCCESS, documents[0]);
 		}
 		
 		return response;

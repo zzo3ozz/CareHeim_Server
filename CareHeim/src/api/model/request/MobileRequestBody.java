@@ -1,19 +1,21 @@
 package api.model.request;
 
+import clothe.model.FeaturedClothe;
+
 public class MobileRequestBody {
-	private String[] features;
 	private String[] careInfos;
+	private FeaturedClothe featuredClothe;
 	
-	public void setFeatures(String[] features) {
-		this.features = features;
+	public void setFeaturedClothe(FeaturedClothe features) {
+		this.featuredClothe = features;
 	}
 	
 	public void setCareInfos(String[] careInfos) {
 		this.careInfos = careInfos;
 	}
 	
-	public String[] getFeatures() {
-		return this.features;
+	public FeaturedClothe getFeaturedClothe() {
+		return this.featuredClothe;
 	}
 	
 	public String[] getCareInfos() {

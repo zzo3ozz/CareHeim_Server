@@ -17,6 +17,10 @@ public class Clothe extends SegmentResult{
 	private int ptn;
 	private String[] colors;
 	
+	public Clothe() {
+		
+	}
+	
 	public Clothe(SegmentResult seg) {
 		super(seg.getType(), seg.getImg());
 	}

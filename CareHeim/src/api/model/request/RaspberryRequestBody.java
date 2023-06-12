@@ -2,9 +2,13 @@ package api.model.request;
 
 public class RaspberryRequestBody {
 	private byte[] img;
+	private String filePath;
 	private String[] extraFeatures;
 	private int savingIndex;
 	
+	public void setFilePath(String str) {
+		this.filePath = str;
+	}
 	
 	public void setImg(byte[] img) {
 		this.img = img;
@@ -20,6 +24,10 @@ public class RaspberryRequestBody {
 	
 	public String[] getExtraFeatures() {
 		return this.extraFeatures;
+	}
+	
+	public String getFilePath() {
+		return this.filePath;
 	}
 	
 	public byte[] getImg() {

@@ -7,14 +7,17 @@ import clothe.cloudvision.DetectColors;
 import clothe.model.color.*;
 
 public class ColorProvider {
-	public static Color[] getColors(byte[] img) throws IOException {
-		ArrayList<Color> colors_tmp = DetectColors.detectColors(img);
-		
-		Color[] colors = colors_tmp.toArray(new Color[0]);
-		
-		// 의류 색상 군집화처리
-		
-		return colors;
+	public static Color[] getColors(byte[] img){
+		try {
+			ArrayList<Color> colors_tmp = DetectColors.detectColors(img);
+			
+			Color[] colors = colors_tmp.toArray(new Color[0]);
+			
+			return colors;
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	public static ArrayList<ColorBloc> ClustringColor(Color[] colors){
@@ -39,7 +42,7 @@ public class ColorProvider {
 		return blocs;
 	}
 	
-	public static ArrayList<Color> getMainColors(byte[] img) throws IOException {
+	public static ArrayList<Color> getMainColors(byte[] img){
 		Color[] colors = getColors(img);
 		
 		ArrayList<ColorBloc> blocs = ClustringColor(colors);
